@@ -1,13 +1,27 @@
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
+import { env } from '@/config/environment'
 
-//vanvudev
-//password123456
-//mongodb+srv://vanvudev:<db_password>@cluster0.5d0mnsw.mongodb.net/?appName=Cluster0
+import { MongoClient, ServerApiVersion } from 'mongodb'
 
-const MONGODB_URL = 'mongodb+srv://vanvudev:password123456@cluster0.5d0mnsw.mongodb.net/?appName=Cluster0'
+let trelloDatabaseInstance = null
 
-const DATABASE_NAME = 'trello-vanvudev-mern-stack-pro'
+const mongoClientInstance = new MongoClient(env.MONGODB_URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true
+  }
+})
+
+export const CONNECT_DB = async () => {
+  await mongoClientInstance.connect()
+  trelloDatabaseInstance = mongoClientInstance.db(env.DATABASE_NAME)
+}
+
+export const CLOSE_DB = async () => {
+  await mongoClientInstance.close()
+}
+
+export const GET_DB = () => {
+  if (!trelloDatabaseInstance) throw new Error('Must conect to Database first!')
+  return trelloDatabaseInstance
+}
